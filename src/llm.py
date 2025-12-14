@@ -32,8 +32,8 @@ Keep total output under 800 words.
 class LLMClient:
     def __init__(self, disabled: bool = False) -> None:
         self.disabled = disabled
-        self.api_key = os.getenv("GITHUB_TOKEN")
-        self.base_url = os.getenv("GITHUB_MODELS_ENDPOINT")
+        self.api_key = os.getenv("GH_MODELS_TOKEN")
+        self.base_url = os.getenv("MODELS_ENDPOINT")
         self.model = os.getenv("MODEL_NAME", "gpt-4o-mini")
         self.available = not disabled and bool(self.api_key and self.base_url)
         self._client: Optional[OpenAI] = None
