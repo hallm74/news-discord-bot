@@ -5,11 +5,13 @@ A Python 3.11 CLI that fetches national and political news from NPR and AP RSS f
 ## Features
 
 - **Multi-source aggregation**: NPR National, NPR Politics, AP News
-- **Deduplication**: Removes duplicate links and near-duplicate titles
+- **Deduplication**: Removes duplicate links and near-duplicate titles (90%+ match)
 - **AI summarization**: GitHub Models creates readable narrative summaries
+- **Source diversity**: Key Stories alternates between AP/NPR for balanced coverage
 - **Discord integration**: Posts formatted digests with source-attributed links
 - **Fallback mode**: Works without AI (headline-only format)
 - **Fully testable locally** before automation
+- **Scheduled automation**: Daily at 7 AM America/Chicago via GitHub Actions
 
 ## Quickstart
 
@@ -107,6 +109,7 @@ The workflow (`.github/workflows/daily-digest.yml`) runs daily at **7:00 AM Amer
    - `MODEL_NAME`
    - `DISCORD_WEBHOOK_URL`
 3. Enable Actions in repo settings
+4. Test manually: Actions tab → Daily Digest → Run workflow
 
 The workflow runs the same command you test locally:
 ```bash
@@ -141,15 +144,21 @@ If AI fails or is disabled (`--no-llm`), falls back to organized headline bullet
 │   ├── main.py         # CLI entrypoint
 │   ├── feeds.py        # RSS fetching
 │   ├── clean.py        # HTML/text normalization
-│   ├── dedupe.py       # Deduplication
-│   ├── digest.py       # Digest builder
-│   ├── llm.py          # GitHub Models client
-│   └── discord.py      # Discord webhook posting
+│   ├── dedupe.py       # Deduplication (90%+ similarity)
+│   ├── digest.py       # Digest builder with source diversity
+│   ├── llm.py          # GitHub Models client (OpenAI-compatible)
+│   └── discord.py      # Discord webhook posting with chunking
 ├── config/
 │   └── feeds.json      # RSS feed URLs
 ├── tests/              # pytest tests
 ├── .github/workflows/  # GitHub Actions
+├── .env.example        # Environment template
 ├── requirements.txt
 ├── Makefile
-└── README.md
+├── README.md
+└── .gitignore
 ```
+
+## Development Continuation
+
+A `.copilot-instructions` file is included (in `.gitignore`) to help GitHub Copilot understand project context for future development. It documents architecture, design patterns, environment setup, and known issues.
