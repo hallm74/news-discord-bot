@@ -15,17 +15,14 @@ You are a professional news editor. Create a concise daily news digest.
 
 Structure:
 1. Title: "📰 Daily National News Digest"
-2. Write 2-4 paragraphs summarizing the major themes and developments across all stories
+2. Write 2-4 paragraphs synthesizing the major themes and developments
    - Synthesize key takeaways (do NOT just list headlines)
    - Use clear, neutral language
    - Focus on what readers should know today
    - Do NOT include links in the summary text
-3. End with a "🔗 Key Stories" section listing all stories as bullets in this format:
-   - Story title — [Source](link)
-   
-Example bullet: "Biden announces new climate initiative — [NPR](https://...)"
+   - Reference multiple sources as appropriate
 
-Keep total output under 800 words.
+Keep output under 600 words.
 """.strip()
 
 
@@ -40,24 +37,18 @@ class LLMClient:
         if self.available:
             self._client = OpenAI(base_url=self.base_url, api_key=self.api_key)
 
-    def summarize(self, sections: Dict[str, List[Dict[str, str]]]) -> Optional[str]:
+    def summarize(self, items: List[Dict[str, str]]) -> Optional[str]:
         if not self.available or not self._client:
             return None
 
-        # Flatten all items across sections
-        all_items = []
-        for items in sections.values():
-            all_items.extend(items[:6])
-        
-        # Format as bullet list for LLM input
+        # Format items as simple bullet list for LLM context
         bullet_lines = []
-        for item in all_items:
+        for item in items[:20]:  # Limit to prevent token overflow
             title = item.get("title", "")
             source = item.get("source", "")
-            link = item.get("link", "")
-            bullet_lines.append(f"- {title} — [{source}]({link})")
+            bullet_lines.append(f"- {title} ({source})")
         
-        content = "Stories:\n" + "\n".join(bullet_lines)
+        content = "News stories:\n" + "\n".join(bullet_lines)
 
         try:
             response = self._client.chat.completions.create(
