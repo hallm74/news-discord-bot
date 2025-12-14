@@ -1,0 +1,5 @@
+[
+  {"name": "NPR National", "source": "NPR", "url": "https://feeds.npr.org/1001/rss.xml", "section": "top"},
+  {"name": "NPR Politics", "source": "NPR", "url": "https://feeds.npr.org/1014/rss.xml", "section": "politics"},
+  {"name": "AP Top News", "source": "AP", "url": "https://feedx.net/rss/ap.xml", "section": "top"}
+]

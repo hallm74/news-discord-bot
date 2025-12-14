@@ -1,0 +1,30 @@
+name: Daily Digest
+
+on:
+  schedule:
+    - cron: "0 13 * * *" # 7:00 AM America/Chicago
+  workflow_dispatch:
+
+jobs:
+  run-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run digest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_MODELS_ENDPOINT: ${{ secrets.GITHUB_MODELS_ENDPOINT }}
+          MODEL_NAME: ${{ secrets.MODEL_NAME }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          PYTHONPATH: src
+        run: python src/main.py --post
