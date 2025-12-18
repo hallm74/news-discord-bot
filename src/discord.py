@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from typing import List
 
 import requests
@@ -10,6 +11,14 @@ import requests
 LOGGER = logging.getLogger(__name__)
 
 DISCORD_LIMIT = 1900  # reserve space for code fences/formatting
+
+
+def _suppress_embeds(content: str) -> str:
+    """Wrap URLs in angle brackets to prevent Discord embed previews."""
+    # Match URLs that are NOT already wrapped in angle brackets
+    # This regex looks for http/https URLs not preceded by < and not followed by >
+    url_pattern = r'(?<!<)(https?://[^\s<>]+)(?!>)'
+    return re.sub(url_pattern, r'<\1>', content)
 
 
 def _chunk_message(content: str, limit: int = DISCORD_LIMIT) -> List[str]:
@@ -38,7 +47,9 @@ def _chunk_message(content: str, limit: int = DISCORD_LIMIT) -> List[str]:
 
 def post_digest(content: str, webhook_url: str) -> None:
     for chunk in _chunk_message(content):
-        response = requests.post(webhook_url, json={"content": chunk})
+        # Wrap URLs in angle brackets to suppress Discord embeds/previews
+        chunk_with_suppressed_embeds = _suppress_embeds(chunk)
+        response = requests.post(webhook_url, json={"content": chunk_with_suppressed_embeds})
         try:
             response.raise_for_status()
         except Exception as exc:  # pragma: no cover - network errors
